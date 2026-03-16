@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kijanamsafi AirBnB - Professional Demo</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --primary-color: #00A699; /* Teal/Green for 'Kijani' */
+            --secondary-color: #FF5A5F; /* Accent for actions */
+            --dark-text: #222222;
+            --gray-text: #717171;
+            --background: #ffffff;
+            --light-bg: #f7f7f7;
+            --border-radius: 12px;
+            --shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        img { max-width: 100%; display: block; }
+
+        /* --- UTILITIES --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover { background-color: #008580; }
+        
+        .btn-secondary {
+            background-color: var(--dark-text);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--dark-text);
+            color: var(--dark-text);
+        }
+
+        /* --- NAVIGATION --- */
+        .navbar {
+            background: white;
+            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .logo span { color: var(--secondary-color); }
+
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { font-weight: 500; color: var(--gray-text); transition: 0.2s; }
+        .nav-links a:hover { color: var(--dark-text); }
+
+        .auth-btns { display: flex; gap: 10px; }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 80vh;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .hero h1 { font-size: 3.5rem; margin-bottom: 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .hero p { font-size: 1.2rem; margin-bottom: 40px; opacity: 0.9; }
+
+        /* Search Box Component */
+        .search-box {
+            background: white;
+            padding: 10px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 900px;
+            position: absolute;
+            bottom: -40px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            outline: none;
+            background: transparent;
+            cursor: pointer;
+        }
+        
+        .search-input:not(:last-child) {
+            border-right: 1px solid #ddd;
+        }
+
+        .search-btn {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 30px;
+            padding: 15px 30px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* --- SECTIONS GENERAL --- */
+        .section { padding: 80px 0; }
+        .section-title { font-size: 2rem; margin-bottom: 40px; text-align: center; }
+
+        /* --- FEATURED HOUSES GRID --- */
+        .house-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .house-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .house-card:hover { transform: translateY(-5px); }
+
+        .card-img {
+            height: 220px;
+            width: 100%;
+            object-fit: cover;
+            position: relative;
+        }
+        
+        .card-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--primary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .card-body { padding: 20px; }
+        
+        .card-location { color: var(--gray-text); font-size: 0.9rem; margin-bottom: 5px; }
+        .card-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; }
+        .card-price { font-weight: bold; margin-bottom: 10px; }
+        .card-price span { font-weight: normal; color: var(--gray-text); }
+        
+        .card-rating { display: flex; align-items: center; gap: 5px; color: var(--secondary-color); font-weight: bold; }
+        .rating-star { color: var(--secondary-color); }
+
+        /* --- CATEGORIES --- */
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .category-item {
+            text-align: center;
+            cursor: pointer;
+            padding: 20px;
+            border-radius: 10px;
+            transition: background 0.2s;
+        }
+
+        .category-item:hover { background: var(--light-bg); }
+        
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--light-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 1.5rem;
+        }
+
+        /* --- LOCATIONS --- */
+        .location-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .location-card {
+            position: relative;
+            height: 300px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .location-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .location-card:hover img { transform: scale(1.1); }
+
+        .location-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.7));
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+            color: white;
+        }
+
+        .location-name { font-size: 1.5rem; font-weight: bold; }
+
+        /* --- LISTING PAGE LAYOUT --- */
+        .listing-page {
+            background: var(--light-bg);
+            padding-top: 30px;
+        }
+
+        .listing-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 40px;
+        }
+
+        /* Sidebar Filters */
+        .filters-sidebar {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            box-shadow: var(--shadow);
+        }
+
+        .filter-group { margin-bottom: 25px; }
+        .filter-title { font-weight: 700; margin-bottom: 15px; display: block; }
+        
+        .filter-option { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; }
+        .filter-option input { margin-right: 10px; accent-color: var(--primary-color); }
+
+        .price-range { width: 100%; margin-top: 10px; }
+
+        /* --- HOUSE DETAIL PAGE LAYOUT --- */
+        .detail-page {
+            padding-top: 30px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 50px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .main-image {
+            grid-column: 1 / 2;
+            grid-row: 1 / 3;
+            height: 100%;
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+            object-fit: cover;
+        }
+
+        .sub-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .sub-image:first-child { border-radius: 0 var(--border-radius) 0 0; }
+        .sub-image:last-child { border-radius: 0 0 var(--border-radius) 0; }
+
+        .detail-info h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .detail-meta { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 20px; margin-bottom: 20px; }
+
+        .amenities-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0; }
+        .amenity { display: flex; align-items: center; gap: 15px; font-size: 1rem; }
+
+        /* Booking Panel */
+        .booking-panel {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid #ddd;
+            position: sticky;
+            top: 100px;
+        }
+
+        .booking-price-row { display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: bold; margin-bottom: 20px; }
+        .booking-price-row span { font-weight: normal; font-size: 1rem; color: var(--gray-text); }
+
+        .booking-dates { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; }
+        .date-input { padding: 15px; border: none; background: transparent; width: 100%; outline: none; }
+        .date-group { border-bottom: 1px solid #ddd; }
+        .date-group:last-child { border-bottom: none; }
+        
+        .booking-total { display: flex; justify-content: space-between; margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; font-weight: bold; }
+
+        /* --- FOOTER --- */
+        .footer {
+            background: var(--dark-text);
+            color: white;
+            padding: 50px 0;
+            margin-top: 50px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+
+        .footer h3 { margin-bottom: 20px; font-size: 1rem; }
+        .footer ul li { margin-bottom: 10px; }
+        .footer ul li a { color: #ccc; transition: color 0.2s; }
+        .footer ul li a:hover { color: white; }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 968px) {
+            .listing-layout, .detail-grid { grid-template-columns: 1fr; }
+            .filters-sidebar { position: static; margin-bottom: 30px; }
+            .booking-panel { position: static; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .location-grid { grid-template-columns: repeat(2, 1fr); }
+            .search-box { flex-direction: column; border-radius: 20px; padding: 20px; }
+            .search-input { width: 100%; border-bottom: 1px solid #eee; }
+            .search-btn { width: 100%; }
+        }
+
+        @media (max-width: 600px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2rem; }
+            .gallery-grid { grid-template-columns: 1fr; }
+            .main-image { grid-column: auto; grid-row: auto; height: 300px; border-radius: var(--border-radius); }
+            .sub-image { display: none; }
+            .amenities-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. NAVIGATION BAR -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <span>Kijanamsafi</span> AirBnB
+            </div>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#listings">Houses</a></li>
+                <li><a href="#">Locations</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="auth-btns">
+                <button class="btn btn-outline" style="padding: 8px 20px; border:none;">Login</button>
+                <button class="btn btn-primary" style="padding: 8px 20px;">Sign Up</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 2. HERO SECTION -->
+    <section class="hero">
+        <h1>Find Your Next Stay</h1>
+        <p>Discover affordable and verified houses in Meru, Nairobi, Nanyuki and more.</p>
+    </section>
+
+    <!-- Search Box (Floating) -->
+    <div style="background: white; padding-bottom: 60px; position: relative; z-index: 10;">
+        <div class="container">
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Location (e.g. Meru Town)">
+                <input type="text" class="search-input" placeholder="Check In">
+                <input type="text" class="search-input" placeholder="Check Out">
+                <input type="text" class="search-input" placeholder="Guests">
+                <button class="search-btn">Search Houses</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. FEATURED HOUSES -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Featured Houses</h2>
+            <div class="house-grid">
+                <!-- Card 1 -->
+                <div class="house-card">
+                    <div class="card-img" style="position: relative;">
+                        <span class="card-badge">Featured</span>
+                        <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="House" style="height:100%; object-fit:cover;">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-location">Meru Town</div>
+                        <div class="card-title">Executive Studio</div>
+                        <div class="card-price">KES 2,500 <span>/ night</span></div>
+                        <div class="card-rating"><span class="rating-star">★</span> 4.8 (24 reviews)</div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="house-card">
+                    <div class="card-img">
+                        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="House" style="height:100%; object-fit:cover;">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-location">Nanyuki</div>
+                        <div class="card-title">Modern One Bedroom</div>
+                        <div class="card-price">KES 4,500 <span>/ night</span></div>
+                        <div class="card-rating"><span class="rating-star">★</span> 4.9 (45 reviews)</div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="house-card">
+                    <div class="card-img">
+                        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="House" style="height:100%; object-fit:cover;">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-location">Westlands, Nairobi</div>
+                        <div class="card-title">Luxury Apartment</div>
+                        <div class="card-price">KES 8,000 <span>/ night</span></div>
+                        <div class="card-rating"><span class="rating-star">★</span> 5.0 (12 reviews)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. HOUSE CATEGORIES -->
+    <section class="section" style="background: var(--light-bg);">
+        <div class="container">
+            <h2 class="section-title">Browse by Category</h2>
+            <div class="categories">
+                <div class="category-item">
+                    <div class="category-icon">🏢</div>
+                    <h4>Studio</h4>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">🛏️</div>
+                    <h4>Bedsitter</h4>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">🏠</div>
+                    <h4>One Bedroom</h4>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">🏡</div>
+                    <h4>Two Bedroom</h4>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">🌟</div>
+                    <h4>Luxury</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. POPULAR LOCATIONS -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Popular Locations</h2>
+            <div class="location-grid">
+                <div class="location-card">
+                    <img src="https://images.unsplash.com/photo-1590001155093-a3c66ab0c3ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Meru">
+                    <div class="location-overlay">
+                        <div class="location-name">Meru</div>
+                    </div>
+                </div>
+                <div class="location-card">
+                    <img src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Nairobi">
+                    <div class="location-overlay">
+                        <div class="location-name">Nairobi</div>
+                    </div>
+                </div>
+                <div class="location-card">
+                    <img src="https://images.unsplash.com/photo-1580581096469-8afb37c24482?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Nanyuki">
+                    <div class="location-overlay">
+                        <div class="location-name">Nanyuki</div>
+                    </div>
+                </div>
+                <div class="location-card">
+                    <img src="https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Thika">
+                    <div class="location-overlay">
+                        <div class="location-name">Thika</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. HOUSE LISTING PAGE SIMULATION (GRID + SIDEBAR) -->
+    <section id="listings" class="section listing-page">
+        <div class="container">
+            <div class="listing-layout">
+                <!-- Sidebar Filters -->
+                <aside class="filters-sidebar">
+                    <h3 style="margin-bottom: 20px;">Filters</h3>
+                    
+                    <div class="filter-group">
+                        <span class="filter-title">Price Range</span>
+                        <input type="range" class="price-range" min="1000" max="20000">
+                        <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--gray-text);">
+                            <span>KES 1k</span>
+                            <span>KES 20k</span>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <span class="filter-title">House Type</span>
+                        <label class="filter-option"><input type="checkbox" checked> Studio</label>
+                        <label class="filter-option"><input type="checkbox"> Bedsitter</label>
+                        <label class="filter-option"><input type="checkbox" checked> One Bedroom</label>
+                        <label class="filter-option"><input type="checkbox"> Two Bedroom</label>
+                    </div>
+
+                    <div class="filter-group">
+                        <span class="filter-title">Amenities</span>
+                        <label class="filter-option"><input type="checkbox"> WiFi</label>
+                        <label class="filter-option"><input type="checkbox"> Parking</label>
+                        <label class="filter-option"><input type="checkbox"> Hot Shower</label>
+                    </div>
+                    
+                    <button class="btn btn-primary" style="width: 100%;">Apply Filters</button>
+                </aside>
+
+                <!-- Main Listing Grid -->
+                <div class="main-content">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h3>24 Houses available in Meru</h3>
+                        <select style="padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+                            <option>Sort by: Recommended</option>
+                            <option>Price: Low to High</option>
+                            <option>Price: High to Low</option>
+                        </select>
+                    </div>
+
+                    <div class="house-grid" style="grid-template-columns: repeat(2, 1fr);">
+                        <!-- Repeat Cards for Listing Demo -->
+                        <div class="house-card">
+                            <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="House" class="card-img" style="height:250px;">
+                            <div class="card-body">
+                                <div class="card-location">Meru Town</div>
+                                <div class="card-title">Quiet Bedsitter</div>
+                                <div class="card-price">KES 1,800 <span>/ night</span></div>
+                                <div class="card-rating"><span class="rating-star">★</span> 4.5</div>
+                            </div>
+                        </div>
+                        <div class="house-card">
+                            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="House" class="card-img" style="height:250px;">
+                            <div class="card-body">
+                                <div class="card-location">Makutano</div>
+                                <div class="card-title">Spacious 1 Bedroom</div>
+                                <div class="card-price">KES 3,200 <span>/ night</span></div>
+                                <div class="card-rating"><span class="rating-star">★</span> 4.9</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. HOUSE DETAIL PAGE SIMULATION -->
+    <section class="section detail-page">
+        <div class="container">
+            <h2 style="margin-bottom: 30px; text-align: center; color: var(--gray-text);">--- House Detail Preview ---</h2>
+            
+            <div class="detail-grid">
+                <!-- Left: Info & Gallery -->
+                <div class="detail-content">
+                    <div class="gallery-grid">
+                        <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Main" class="main-image">
+                        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Sub" class="sub-image">
+                        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Sub" class="sub-image">
+                    </div>
+
+                    <div class="detail-info" style="margin-top: 30px;">
+                        <h1>Executive Studio Apartment - Meru</h1>
+                        <div class="detail-meta">
+                            <div>
+                                <span style="font-weight: bold;">★ 4.8</span> · 24 reviews · <span style="color:var(--primary-color)">Superhost</span>
+                            </div>
+                            <div style="color: var(--gray-text);">Meru Town, Kenya</div>
+                        </div>
+
+                        <p style="color: var(--gray-text); line-height: 1.8;">
+                            Modern executive bedsitter located in the heart of Meru Town. Perfect for business travelers or couples. Features fast WiFi, secure parking, and 24/7 security. The space is self-contained with a modern kitchenette and hot shower.
+                        </p>
+
+                        <h3 style="margin-top: 30px; margin-bottom: 20px;">Amenities</h3>
+                        <div class="amenities-grid">
+                            <div class="amenity">📶 Fast WiFi</div>
+                            <div class="amenity">🚗 Free Parking</div>
+                            <div class="amenity">📺 Smart TV</div>
+                            <div class="amenity">🚿 Hot Shower</div>
+                            <div class="amenity">🍳 Kitchen</div>
+                            <div class="amenity">🔒 Security</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Booking Panel -->
+                <div class="booking-panel">
+                    <div class="booking-price-row">
+                        KES 2,500 <span>/ night</span>
+                    </div>
+                    
+                    <div class="booking-dates">
+                        <div class="date-group">
+                            <label style="font-size: 0.8rem; padding-left: 15px; font-weight: bold;">CHECK-IN</label>
+                            <input type="text" class="date-input" value="10/10/2023">
+                        </div>
+                        <div class="date-group">
+                            <label style="font-size: 0.8rem; padding-left: 15px; font-weight: bold;">CHECK-OUT</label>
+                            <input type="text" class="date-input" value="15/10/2023">
+                        </div>
+                        <div class="date-group" style="grid-column: 1 / -1;">
+                            <label style="font-size: 0.8rem; padding-left: 15px; font-weight: bold;">GUESTS</label>
+                            <input type="text" class="date-input" value="2 Guests">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary" style="width: 100%; background: var(--secondary-color);">Request to Book</button>
+                    
+                    <p style="text-align: center; margin-top: 10px; font-size: 0.8rem; color: var(--gray-text);">You won't be charged yet</p>
+
+                    <div class="booking-total">
+                        <span>Total (5 nights):</span>
+                        <span>KES 12,500</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. CALL TO ACTION -->
+    <section class="section" style="background: var(--primary-color); color: white; text-align: center;">
+        <div class="container">
+            <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Find Your Next Stay With Kijanamsafi</h2>
+            <p style="margin-bottom: 30px; opacity: 0.9;">Verified Houses • Secure Payments • 24/7 Support</p>
+            <button class="btn" style="background: white; color: var(--primary-color); padding: 15px 40px; font-size: 1.1rem;">Browse All Houses</button>
+        </div>
+    </section>
+
+    <!-- 9. FOOTER -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Safety Information</a></li>
+                        <li><a href="#">Cancellation Options</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Community</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Newsroom</a></li>
+                        <li><a href="#">Careers</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Hosting</h3>
+                    <ul>
+                        <li><a href="#">List Your House</a></li>
+                        <li><a href="#">Host Resources</a></li>
+                        <li><a href="#">Community Forum</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Kijanamsafi AirBnB</h3>
+                    <p style="color: #ccc; font-size: 0.9rem;">
+                        Nairobi, Kenya<br>
+                        contact@kijanamsafi.co.ke<br>
+                        +254 700 000 000
+                    </p>
+                </div>
+            </div>
+            <div style="border-top: 1px solid #444; margin-top: 40px; padding-top: 20px; text-align: center; color: #777; font-size: 0.8rem;">
+                © 2023 Kijanamsafi AirBnB Demo. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
